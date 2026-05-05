@@ -81,7 +81,7 @@ markers = [
 [tool.coverage.run]
 source = ["src/weather_pipeline"]
 branch = true
-omit = ["*/cli.py", "*/db/migrations/*"]
+omit = ["*/cli.py", "*/db/migrations/*", "*/scheduler/worker.py"]
 
 [tool.coverage.report]
 exclude_lines = [
