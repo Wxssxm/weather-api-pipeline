@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual env
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Project
+*.log
+logs/
+
+# Secrets
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Docker volumes (when bind-mounted)
+postgres-data/
+grafana-data/

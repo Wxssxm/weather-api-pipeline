@@ -1,0 +1,97 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "postgres", "uid": "Weather Postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT o.observed_at AS time, c.name AS metric, o.temperature_c AS value FROM weather_observations o JOIN cities c ON c.id = o.city_id WHERE o.observed_at > NOW() - INTERVAL '7 days' ORDER BY o.observed_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Temperature by city (last 7 days)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "Weather Postgres" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 9 },
+      "id": 2,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT o.observed_at AS time, c.name AS metric, o.relative_humidity_pct AS value FROM weather_observations o JOIN cities c ON c.id = o.city_id WHERE o.observed_at > NOW() - INTERVAL '24 hours' ORDER BY o.observed_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Humidity (last 24h)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "postgres", "uid": "Weather Postgres" },
+      "fieldConfig": {
+        "defaults": { "unit": "kmh" },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 9 },
+      "id": 3,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "showUnfilled": true
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT c.name, MAX(o.wind_speed_kmh) AS peak_wind_kmh FROM weather_observations o JOIN cities c ON c.id = o.city_id WHERE o.observed_at > NOW() - INTERVAL '24 hours' GROUP BY c.name ORDER BY peak_wind_kmh DESC",
+          "refId": "A"
+        }
+      ],
+      "title": "Peak wind by city (last 24h)",
+      "type": "bargauge"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "tags": ["weather", "open-meteo"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Weather Pipeline",
+  "uid": "weather-pipeline",
+  "version": 1,
+  "weekStart": ""
+}
