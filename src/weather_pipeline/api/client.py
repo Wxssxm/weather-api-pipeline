@@ -32,6 +32,10 @@ CURRENT_VARIABLES: tuple[str, ...] = (
 )
 
 
+class TransientUpstreamError(Exception):
+    """Raised on 5xx responses so tenacity can retry; 4xx escapes via HTTPStatusError."""
+
+
 class OpenMeteoClient:
     """Thin async wrapper around the /v1/forecast endpoint."""
 
@@ -78,7 +82,7 @@ class OpenMeteoClient:
 
         retrying = AsyncRetrying(
             retry=retry_if_exception_type(
-                (httpx.TimeoutException, httpx.HTTPStatusError, httpx.NetworkError)
+                (httpx.TimeoutException, httpx.NetworkError, TransientUpstreamError)
             ),
             wait=wait_exponential(multiplier=2, min=2, max=20),
             stop=stop_after_attempt(self._max_retries),
@@ -89,10 +93,8 @@ class OpenMeteoClient:
             with attempt:
                 resp = await self._client.get(f"{self._base_url}/forecast", params=params)
                 if resp.status_code >= 500:
-                    raise httpx.HTTPStatusError(
-                        f"upstream {resp.status_code}", request=resp.request, response=resp
-                    )
-                resp.raise_for_status()
+                    raise TransientUpstreamError(f"upstream {resp.status_code}")
+                resp.raise_for_status()  # 4xx -> HTTPStatusError, not retried
                 payload = resp.json()
                 return ForecastResponse.model_validate(payload)
 
