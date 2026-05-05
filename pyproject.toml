@@ -34,6 +34,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
     "pytest-cov>=6.0.0",
     "pytest-mock>=3.14.0",
     "respx>=0.21.0",
@@ -73,6 +74,7 @@ target-version = ["py311"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers --strict-config"
+asyncio_mode = "strict"
 markers = [
     "integration: marks tests as integration (deselect with '-m \"not integration\"')",
     "needs_postgres: marks tests as requiring a postgres instance",

@@ -29,10 +29,12 @@ def upsert_cities(session: Session, cities: Iterable[CityDataclass]) -> int:
     if not rows:
         return 0
     stmt = (
-        pg_insert(City).values(rows).on_conflict_do_nothing(index_elements=["name", "country_code"])
+        pg_insert(City)
+        .values(rows)
+        .on_conflict_do_nothing(index_elements=["name", "country_code"])
+        .returning(City.id)
     )
-    result = session.execute(stmt)
-    return result.rowcount or 0
+    return len(session.execute(stmt).all())
 
 
 def list_cities(session: Session) -> list[City]:
